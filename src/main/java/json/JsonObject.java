@@ -7,24 +7,24 @@ import java.util.Arrays;
  * Created by Andrii_Rodionov on 1/3/2017.
  */
 public class JsonObject extends Json {
-    private ArrayList<JsonPair> jsonObjects;
+    private ArrayList<JsonPair> jsonObjects = new ArrayList<>();
 
     public JsonObject(JsonPair... jsonPairs) {
-        jsonObjects = new ArrayList<>();
-        //for (int i = 0; i < jsonPairs.length; ++i) {
-        //    jsonObjects.add(jsonPairs[i]);
-        //}
-        for(JsonPair pair: jsonPairs) {
-            add(pair);
+        for (int i = 0; i < jsonPairs.length; ++i) {
+            jsonObjects.add(jsonPairs[i]);
         }
     }
 
     @Override
     public String toJson() {
-        String str = "";
+        String str = "{";
         for (int i = 0; i < jsonObjects.size(); ++i) {
-            str += "{'" + jsonObjects.get(i).key + "': '" + jsonObjects.get(i).value.toString() + "'}";
+            str += "'" + jsonObjects.get(i).key + "': " + jsonObjects.get(i).value.toJson();
+            if (i != jsonObjects.size() - 1) {
+                str += ",";
+            }
         }
+        str += '}';
         return str;
     }
 
@@ -42,11 +42,12 @@ public class JsonObject extends Json {
     }
 
     public JsonObject projection(String... names) {
+        JsonObject res = new JsonObject();
         for(int i=0; i<jsonObjects.size(); ++i){
             if(this.find(names[i])!=null){
-                this.add(new JsonPair(names[i], this.find(names[i])));
+                res.add(new JsonPair(names[i], this.find(names[i])));
             }
         }
-        return null;
+        return res;
     }
 }
